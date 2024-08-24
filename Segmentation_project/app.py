@@ -351,10 +351,10 @@ if uploaded_files:
         # Step 6: Visualization
         if progress_bar:
             with st.spinner("Generating final metadata and visualization..."):
-                final_metadata = generate_final_metadata()
+                generate_final_metadata()
         else:
             st.info("Generating final metadata and visualization...")
-            final_metadata = generate_final_metadata()
+            generate_final_metadata()
         st.success("Visualization ready!")
 
         # Display final output
@@ -362,6 +362,7 @@ if uploaded_files:
 
         # Load final metadata
         if os.path.exists(final_metadata_file):
+            st.info(f"Final metadata file found at: {final_metadata_file}")
             with open(final_metadata_file, 'r') as f:
                 final_metadata = json.load(f)
 
