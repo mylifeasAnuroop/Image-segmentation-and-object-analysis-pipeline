@@ -1,0 +1,15 @@
+{
+    "hooman.jpg": {
+        "master_image": "data\\output\\annotated_hooman.jpg",
+        "segmented_objects": [
+            {
+                "object_image": "data\\segmented_objects\\hooman_object_1.png",
+                "summary_table": "data\\output\\hooman_object_1.png_summary_table.jpg"
+            },
+            {
+                "object_image": "data\\segmented_objects\\hooman_object_3.png",
+                "summary_table": "data\\output\\hooman_object_3.png_summary_table.jpg"
+            }
+        ]
+    }
+}

@@ -1,0 +1,20 @@
+[
+    {
+        "image_id": "hooman_object_1.png",
+        "detection": {
+            "description": "dog",
+            "probability": 0.7926869988441467
+        },
+        "texts": "- no text found",
+        "summary": "NA"
+    },
+    {
+        "image_id": "hooman_object_3.png",
+        "detection": {
+            "description": "refrigerator",
+            "probability": 0.3414190113544464
+        },
+        "texts": "- no text found",
+        "summary": "NA"
+    }
+]

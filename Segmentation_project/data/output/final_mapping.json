@@ -1,0 +1,20 @@
+{
+    "hooman_object_1.png": {
+        "image_path": "C:\\Users\\anuroop arya\\Downloads\\Segmentation_project\\data\\input_images\\hooman_object_1.png",
+        "detection": {
+            "description": "dog",
+            "probability": 0.7926869988441467
+        },
+        "texts": "- no text found",
+        "summary": "NA"
+    },
+    "hooman_object_3.png": {
+        "image_path": "C:\\Users\\anuroop arya\\Downloads\\Segmentation_project\\data\\input_images\\hooman_object_3.png",
+        "detection": {
+            "description": "refrigerator",
+            "probability": 0.3414190113544464
+        },
+        "texts": "- no text found",
+        "summary": "NA"
+    }
+}
