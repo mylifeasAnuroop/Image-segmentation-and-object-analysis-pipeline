@@ -205,7 +205,6 @@
 
 
 
-
 import sys
 import os
 import streamlit as st
@@ -361,51 +360,65 @@ if uploaded_files:
         st.header("Analysis Results")
 
         # Load final metadata
+        final_metadata = {}
         if os.path.exists(final_metadata_file):
             st.info(f"Final metadata file found at: {final_metadata_file}")
-            with open(final_metadata_file, 'r') as f:
-                final_metadata = json.load(f)
+            try:
+                with open(final_metadata_file, 'r') as f:
+                    final_metadata = json.load(f)
+            except json.JSONDecodeError as e:
+                st.error(f"Error loading JSON data: {e}")
 
+            if not final_metadata:
+                st.error("Final metadata is empty. Please check the file content.")
+        else:
+            st.error("No final metadata available. Please ensure all steps are completed.")
+
+        if final_metadata:
             for image_name, metadata in final_metadata.items():
                 st.subheader(f"Results for {image_name}")
 
                 # Display master image
-                master_image_path = metadata['master_image']
-                if os.path.exists(master_image_path):
+                master_image_path = metadata.get('master_image')
+                if master_image_path and os.path.exists(master_image_path):
                     st.image(master_image_path, caption="Master Image", use_column_width=True)
                 else:
                     st.error(f"Master image not found: {master_image_path}")
 
                 # Display segmented objects and their summary tables
-                for obj in metadata['segmented_objects']:
+                for obj in metadata.get('segmented_objects', []):
                     st.subheader("Segmented Object")
 
-                    object_image_path = obj['object_image']
-                    summary_table_path = obj['summary_table']
+                    object_image_path = obj.get('object_image')
+                    summary_table_path = obj.get('summary_table')
 
-                    if os.path.exists(object_image_path):
+                    if object_image_path and os.path.exists(object_image_path):
                         st.image(object_image_path, caption="Segmented Object", use_column_width=True)
                     else:
                         st.error(f"Segmented object image not found: {object_image_path}")
 
-                    if os.path.exists(summary_table_path):
+                    if summary_table_path and os.path.exists(summary_table_path):
                         st.image(summary_table_path, caption="Summary Table", use_column_width=True)
                     else:
                         st.error(f"Summary table not found: {summary_table_path}")
 
                     # Custom Annotations
                     if add_annotations:
-                        annotation = st.text_input(f"Add annotation for {obj['object_image']}:", key=f"annotation_{obj['object_image']}")
-                        if st.button(f"Save Annotation for {obj['object_image']}", key=f"save_annotation_{obj['object_image']}"):
+                        annotation = st.text_input(f"Add annotation for {obj.get('object_image', '')}:", key=f"annotation_{obj.get('object_image', '')}")
+                        if st.button(f"Save Annotation for {obj.get('object_image', '')}", key=f"save_annotation_{obj.get('object_image', '')}"):
                             # Code to save the annotation (e.g., updating the metadata or saving to a file)
-                            st.success(f"Annotation saved for {obj['object_image']}!")
-
-        else:
-            st.error("No final metadata available. Please ensure all steps are completed.")
+                            st.success(f"Annotation saved for {obj.get('object_image', '')}!")
 
         # Download final metadata
         if allow_download:
             st.write(f"Final Metadata saved to: {final_metadata_file}")
-            st.download_button(
-                "Download Final Metadata", json.dumps(final_metadata), "final_metadata.json", "application/json"
-            )
+            try:
+                # Ensure final_metadata is not empty and is serializable
+                if final_metadata:
+                    st.download_button(
+                        "Download Final Metadata", json.dumps(final_metadata), "final_metadata.json", "application/json"
+                    )
+                else:
+                    st.warning("No metadata available for download.")
+            except Exception as e:
+                st.error(f"Error creating download button: {e}")
