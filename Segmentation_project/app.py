@@ -1,8 +1,8 @@
-
 import sys
 import os
 import streamlit as st
 import json
+import shutil
 
 # Add the parent directory of 'utils' to sys.path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -16,16 +16,19 @@ from utils.data_mapping import map_data
 from utils.visualization import generate_final_metadata
 
 # Define paths relative to the project root
-input_images_path = os.path.join('data', 'input_images')
-segmented_objects_path = os.path.join('data', 'segmented_objects')
-output_path = os.path.join('data', 'output')
+root_dir = os.path.abspath(os.path.dirname(__file__))
+input_images_path = os.path.join(root_dir, 'data', 'input_images')
+segmented_objects_path = os.path.join(root_dir, 'data', 'segmented_objects')
+output_path = os.path.join(root_dir, 'data', 'output')
 metadata_file = os.path.join(output_path, 'metadata.json')
 final_metadata_file = os.path.join(output_path, 'final_metadata.json')
-temp_dir = os.path.join('temp')
+temp_dir = os.path.join(root_dir, 'temp')
 
-# Ensure that the input_images directory exists
-if not os.path.exists(input_images_path):
-    os.makedirs(input_images_path)
+# Ensure that the directories exist
+os.makedirs(input_images_path, exist_ok=True)
+os.makedirs(segmented_objects_path, exist_ok=True)
+os.makedirs(output_path, exist_ok=True)
+os.makedirs(temp_dir, exist_ok=True)
 
 # Streamlit app setup
 st.set_page_config(page_title="Image Intelligence Hub", layout="wide", initial_sidebar_state="expanded")
@@ -50,8 +53,6 @@ if uploaded_files:
 
     for uploaded_file in uploaded_files:
         # Save uploaded file
-        if not os.path.exists(temp_dir):
-            os.makedirs(temp_dir)
         uploaded_file_path = os.path.join(temp_dir, uploaded_file.name)
         with open(uploaded_file_path, 'wb') as f:
             f.write(uploaded_file.getbuffer())
@@ -62,6 +63,10 @@ if uploaded_files:
         st.success(f"Image {uploaded_file.name} prepared successfully!")
 
         # Step 1: Image Segmentation
+        st.info(f"Segmentation directory: {segmented_objects_path}")
+        st.info(f"Input images directory: {input_images_path}")
+        st.info(f"Output directory: {output_path}")
+
         if progress_bar:
             with st.spinner("Running segmentation model..."):
                 run_segmentation(input_images_path, segmented_objects_path)
@@ -160,6 +165,3 @@ if uploaded_files:
             st.download_button(
                 "Download Final Metadata", json.dumps(final_metadata), "final_metadata.json", "application/json"
             )
-
-
-
