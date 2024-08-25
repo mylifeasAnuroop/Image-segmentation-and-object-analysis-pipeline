@@ -222,7 +222,7 @@ if uploaded_files:
 
     for uploaded_file in uploaded_files:
         # Save uploaded file
-        uploaded_file_path = os.path.join(input_images_path, uploaded_file.name)
+        uploaded_file_path = os.path.join(temp_dir, uploaded_file.name)
         with open(uploaded_file_path, 'wb') as f:
             f.write(uploaded_file.getbuffer())
 
@@ -232,10 +232,6 @@ if uploaded_files:
         st.success(f"Image {uploaded_file.name} prepared successfully!")
 
         # Step 1: Image Segmentation
-        st.info(f"Segmentation directory: {segmented_objects_path}")
-        st.info(f"Input images directory: {input_images_path}")
-        st.info(f"Output directory: {output_path}")
-
         if progress_bar:
             with st.spinner("Running segmentation model..."):
                 run_segmentation(input_images_path, segmented_objects_path)
@@ -298,12 +294,11 @@ if uploaded_files:
                 final_metadata = json.load(f)
 
             for image_name, metadata in final_metadata.items():
-                master_image_filename = metadata.get("master_image", "")
-                master_image_path = os.path.join(input_images_path, master_image_filename)
+                master_image_path = metadata.get("master_image", "")
 
                 if os.path.exists(master_image_path):
                     st.subheader("Master Image")
-                    st.image(master_image_path, caption="Master Image")
+                    st.image(master_image_path, caption="Master Image", use_column_width=True)
                 else:
                     st.error(f"Master image not found: {master_image_path}")
 
@@ -312,13 +307,13 @@ if uploaded_files:
 
                     object_image_path = os.path.join(segmented_objects_path, os.path.basename(obj['object_image']))
                     if os.path.exists(object_image_path):
-                        st.image(object_image_path, caption="Segmented Object")
+                        st.image(object_image_path, caption="Segmented Object", use_column_width=True)
                     else:
                         st.error(f"Segmented object image not found: {object_image_path}")
 
                     summary_table_path = os.path.join(output_path, os.path.basename(obj['summary_table']))
                     if os.path.exists(summary_table_path):
-                        st.image(summary_table_path, caption="Summary Table")
+                        st.image(summary_table_path, caption="Summary Table", use_column_width=True)
                     else:
                         st.error(f"Summary table not found: {summary_table_path}")
 
