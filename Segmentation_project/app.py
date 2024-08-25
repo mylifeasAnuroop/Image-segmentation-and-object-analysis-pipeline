@@ -167,6 +167,11 @@ if uploaded_files:
                 "Download Final Metadata", json.dumps(final_metadata), "final_metadata.json", "application/json"
             )
 '''
+
+
+
+
+
 import sys
 import os
 import streamlit as st
@@ -225,6 +230,9 @@ if uploaded_files:
         uploaded_file_path = os.path.join(temp_dir, uploaded_file.name)
         with open(uploaded_file_path, 'wb') as f:
             f.write(uploaded_file.getbuffer())
+
+        # Display the uploaded image in large size
+        st.image(uploaded_file, caption=f"Uploaded Image: {uploaded_file.name}", use_column_width=True)
 
         # Preprocess and move the new image
         st.info(f"Preparing environment by cleaning old files and moving {uploaded_file.name}...")
@@ -294,26 +302,18 @@ if uploaded_files:
                 final_metadata = json.load(f)
 
             for image_name, metadata in final_metadata.items():
-                master_image_path = metadata.get("master_image", "")
-
-                if os.path.exists(master_image_path):
-                    st.subheader("Master Image")
-                    st.image(master_image_path, caption="Master Image")
-                else:
-                    st.error(f"Master image not found: {master_image_path}")
-
                 for obj in metadata['segmented_objects']:
                     st.subheader(f"Segmented Object")
 
                     object_image_path = os.path.join(segmented_objects_path, os.path.basename(obj['object_image']))
                     if os.path.exists(object_image_path):
-                        st.image(object_image_path, caption="Segmented Object")
+                        st.image(object_image_path, caption="Segmented Object", use_column_width=True)
                     else:
                         st.error(f"Segmented object image not found: {object_image_path}")
 
                     summary_table_path = os.path.join(output_path, os.path.basename(obj['summary_table']))
                     if os.path.exists(summary_table_path):
-                        st.image(summary_table_path, caption="Summary Table")
+                        st.image(summary_table_path, caption="Summary Table", use_column_width=True)
                     else:
                         st.error(f"Summary table not found: {summary_table_path}")
 
@@ -330,3 +330,27 @@ if uploaded_files:
             st.download_button(
                 "Download Final Metadata", json.dumps(final_metadata), "final_metadata.json", "application/json"
             )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
