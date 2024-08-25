@@ -167,7 +167,6 @@ if uploaded_files:
                 "Download Final Metadata", json.dumps(final_metadata), "final_metadata.json", "application/json"
             )
 '''
-
 import sys
 import os
 import streamlit as st
@@ -223,7 +222,7 @@ if uploaded_files:
 
     for uploaded_file in uploaded_files:
         # Save uploaded file
-        uploaded_file_path = os.path.join(temp_dir, uploaded_file.name)
+        uploaded_file_path = os.path.join(input_images_path, uploaded_file.name)
         with open(uploaded_file_path, 'wb') as f:
             f.write(uploaded_file.getbuffer())
 
