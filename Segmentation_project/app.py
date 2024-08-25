@@ -168,7 +168,6 @@ if uploaded_files:
             )
 '''
 
-
 import sys
 import os
 import streamlit as st
@@ -218,8 +217,6 @@ add_annotations = st.sidebar.checkbox("Enable Custom Annotations")
 uploaded_files = st.file_uploader(
     "Upload Image(s) for Analysis", type=['png', 'jpg', 'jpeg'], accept_multiple_files=upload_multiple)
 
-uploaded_file_paths = []  # List to store the paths of uploaded files
-
 if uploaded_files:
     if not isinstance(uploaded_files, list):
         uploaded_files = [uploaded_files]
@@ -229,10 +226,6 @@ if uploaded_files:
         uploaded_file_path = os.path.join(temp_dir, uploaded_file.name)
         with open(uploaded_file_path, 'wb') as f:
             f.write(uploaded_file.getbuffer())
-
-        # Move file to input_images directory
-        shutil.move(uploaded_file_path, os.path.join(input_images_path, uploaded_file.name))
-        uploaded_file_paths.append(uploaded_file.name)  # Add to list of uploaded files
 
         # Preprocess and move the new image
         st.info(f"Preparing environment by cleaning old files and moving {uploaded_file.name}...")
@@ -306,16 +299,14 @@ if uploaded_files:
                 final_metadata = json.load(f)
 
             for image_name, metadata in final_metadata.items():
-                master_image_name = metadata.get("master_image", "")
+                master_image_filename = metadata.get("master_image", "")
+                master_image_path = os.path.join(input_images_path, master_image_filename)
 
-                # Display the original uploaded image
-                if master_image_name in uploaded_file_paths:
-                    master_image_path = os.path.join(input_images_path, master_image_name)
-                    if os.path.exists(master_image_path):
-                        st.subheader("Master Image")
-                        st.image(master_image_path, caption="Master Image", use_column_width=True)
-                    else:
-                        st.error(f"Master image not found: {master_image_path}")
+                if os.path.exists(master_image_path):
+                    st.subheader("Master Image")
+                    st.image(master_image_path, caption="Master Image")
+                else:
+                    st.error(f"Master image not found: {master_image_path}")
 
                 for obj in metadata['segmented_objects']:
                     st.subheader(f"Segmented Object")
