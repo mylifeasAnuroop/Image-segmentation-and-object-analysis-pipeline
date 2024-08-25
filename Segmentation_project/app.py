@@ -218,19 +218,25 @@ add_annotations = st.sidebar.checkbox("Enable Custom Annotations")
 uploaded_files = st.file_uploader(
     "Upload Image(s) for Analysis", type=['png', 'jpg', 'jpeg'], accept_multiple_files=upload_multiple)
 
+uploaded_file_paths = []  # List to store the paths of uploaded files
+
 if uploaded_files:
     if not isinstance(uploaded_files, list):
         uploaded_files = [uploaded_files]
 
     for uploaded_file in uploaded_files:
-        # Save uploaded file to the temp directory
+        # Save uploaded file
         uploaded_file_path = os.path.join(temp_dir, uploaded_file.name)
         with open(uploaded_file_path, 'wb') as f:
             f.write(uploaded_file.getbuffer())
 
-        # Move the uploaded file to the input_images directory
+        # Move file to input_images directory
+        shutil.move(uploaded_file_path, os.path.join(input_images_path, uploaded_file.name))
+        uploaded_file_paths.append(uploaded_file.name)  # Add to list of uploaded files
+
+        # Preprocess and move the new image
         st.info(f"Preparing environment by cleaning old files and moving {uploaded_file.name}...")
-        shutil.copy(uploaded_file_path, os.path.join(input_images_path, uploaded_file.name))
+        preprocess(uploaded_file.name)
         st.success(f"Image {uploaded_file.name} prepared successfully!")
 
         # Step 1: Image Segmentation
@@ -294,23 +300,24 @@ if uploaded_files:
         # Display final output
         st.header("Analysis Results")
 
-        # Use the uploaded image as the master image
-        master_image_name = uploaded_file.name
-        master_image_path = os.path.join(input_images_path, master_image_name)
-
-        if os.path.exists(master_image_path):
-            st.subheader("Master Image")
-            st.image(master_image_path, caption="Master Image")
-        else:
-            st.error(f"Master image not found: {master_image_path}")
-
         if os.path.exists(final_metadata_file):
             st.write("Final metadata file found.")
             with open(final_metadata_file, 'r') as f:
                 final_metadata = json.load(f)
 
             for image_name, metadata in final_metadata.items():
-                for obj in metadata.get('segmented_objects', []):
+                master_image_name = metadata.get("master_image", "")
+
+                # Display the original uploaded image
+                if master_image_name in uploaded_file_paths:
+                    master_image_path = os.path.join(input_images_path, master_image_name)
+                    if os.path.exists(master_image_path):
+                        st.subheader("Master Image")
+                        st.image(master_image_path, caption="Master Image", use_column_width=True)
+                    else:
+                        st.error(f"Master image not found: {master_image_path}")
+
+                for obj in metadata['segmented_objects']:
                     st.subheader(f"Segmented Object")
 
                     object_image_path = os.path.join(segmented_objects_path, os.path.basename(obj['object_image']))
@@ -338,24 +345,3 @@ if uploaded_files:
             st.download_button(
                 "Download Final Metadata", json.dumps(final_metadata), "final_metadata.json", "application/json"
             )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
