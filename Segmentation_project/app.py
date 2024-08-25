@@ -298,7 +298,7 @@ if uploaded_files:
 
                 if os.path.exists(master_image_path):
                     st.subheader("Master Image")
-                    st.image(master_image_path, caption="Master Image", use_column_width=True)
+                    st.image(master_image_path, caption="Master Image")
                 else:
                     st.error(f"Master image not found: {master_image_path}")
 
@@ -307,13 +307,13 @@ if uploaded_files:
 
                     object_image_path = os.path.join(segmented_objects_path, os.path.basename(obj['object_image']))
                     if os.path.exists(object_image_path):
-                        st.image(object_image_path, caption="Segmented Object", use_column_width=True)
+                        st.image(object_image_path, caption="Segmented Object")
                     else:
                         st.error(f"Segmented object image not found: {object_image_path}")
 
                     summary_table_path = os.path.join(output_path, os.path.basename(obj['summary_table']))
                     if os.path.exists(summary_table_path):
-                        st.image(summary_table_path, caption="Summary Table", use_column_width=True)
+                        st.image(summary_table_path, caption="Summary Table")
                     else:
                         st.error(f"Summary table not found: {summary_table_path}")
 
